@@ -7,5 +7,5 @@ import com.example.taskFlow.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
+	
 }

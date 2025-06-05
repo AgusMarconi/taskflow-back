@@ -12,6 +12,9 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
+import java.util.List;
+import jakarta.persistence.ManyToMany;
+
 @Entity
 @Getter
 @Setter
@@ -33,5 +36,8 @@ public class Tag {
     @UpdateTimestamp
     @Column
     private LocalDateTime updatedAt;
+
+    @ManyToMany(mappedBy = "tags")
+    private List<Task> tasks;
 
 }

@@ -56,8 +56,8 @@ public class Task{
 
     @ManyToMany
     @JoinTable(name = "task_tag",
-        joinColumns = @JoinColumn(name = "task_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
+        joinColumns = @JoinColumn(name = "task_id", nullable = true),
+        inverseJoinColumns = @JoinColumn(name = "tag_id", nullable = true)
     )
     private List<Tag> tags;
 

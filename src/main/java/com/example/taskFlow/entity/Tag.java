@@ -14,6 +14,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import jakarta.persistence.ManyToMany;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Getter
@@ -38,6 +39,7 @@ public class Tag {
     private LocalDateTime updatedAt;
 
     @ManyToMany(mappedBy = "tags")
+    @JsonBackReference
     private List<Task> tasks;
 
 }

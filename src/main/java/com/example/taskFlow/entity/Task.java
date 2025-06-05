@@ -19,6 +19,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.util.List;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.JoinTable;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Getter
@@ -55,6 +56,7 @@ public class Task{
     private LocalDateTime finished_at;
 
     @ManyToMany
+    @JsonManagedReference
     @JoinTable(name = "task_tag",
         joinColumns = @JoinColumn(name = "task_id", nullable = true),
         inverseJoinColumns = @JoinColumn(name = "tag_id", nullable = true)

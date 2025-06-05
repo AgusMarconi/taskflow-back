@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.example.taskFlow.service.TaskService;
 import com.example.taskFlow.entity.Task;
 import com.example.taskFlow.dto.TaskDTO;
+import com.example.taskFlow.dto.TagDTO;
 import com.example.taskFlow.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
@@ -34,6 +36,21 @@ public class TaskController extends BaseController {
                 dto.setUpdated_at(task.getUpdated_at());
                 dto.setFinished_at(task.getFinished_at());
                 dto.setUserId(task.getUser() != null ? task.getUser().getId() : null);
+                
+                if (task.getTags() != null) {
+                    List<TagDTO> tagDTOs = task.getTags().stream()
+                        .map(tag -> {
+                            TagDTO tagDTO = new TagDTO();
+                            tagDTO.setId(tag.getId());
+                            tagDTO.setName(tag.getName());
+                            return tagDTO;
+                        })
+                        .collect(Collectors.toList());
+                    dto.setTags(tagDTOs);
+                } else {
+                    dto.setTags(new ArrayList<>());
+                }
+                
                 return dto;
             })
             .collect(Collectors.toList());
@@ -58,6 +75,20 @@ public class TaskController extends BaseController {
         dto.setFinished_at(task.getFinished_at());
         dto.setUserId(task.getUser() != null ? task.getUser().getId() : null);
         
+        if (task.getTags() != null) {
+            List<TagDTO> tagDTOs = task.getTags().stream()
+                .map(tag -> {
+                    TagDTO tagDTO = new TagDTO();
+                    tagDTO.setId(tag.getId());
+                    tagDTO.setName(tag.getName());
+                    return tagDTO;
+                })
+                .collect(Collectors.toList());
+            dto.setTags(tagDTOs);
+        } else {
+            dto.setTags(new ArrayList<>());
+        }
+        
         return ResponseEntity.ok(dto);
     }
 
@@ -77,12 +108,15 @@ public class TaskController extends BaseController {
         task.setUpdated_at(taskDTO.getUpdated_at());
         task.setFinished_at(taskDTO.getFinished_at());
 
-        // Find the user and validate it exists
         var user = userService.findbyId(taskDTO.getUserId());
         if (user == null) {
             return ResponseEntity.badRequest().build();
         }
         task.setUser(user);
+        
+        if (task.getTags() == null) {
+            task.setTags(new ArrayList<>());
+        }
         
         Task savedTask = taskService.save(task);
         
@@ -96,6 +130,21 @@ public class TaskController extends BaseController {
         savedDTO.setUpdated_at(savedTask.getUpdated_at());
         savedDTO.setFinished_at(savedTask.getFinished_at());
         savedDTO.setUserId(savedTask.getUser() != null ? savedTask.getUser().getId() : null);
+        
+        // Map tags to TagDTOs
+        if (savedTask.getTags() != null) {
+            List<TagDTO> tagDTOs = savedTask.getTags().stream()
+                .map(tag -> {
+                    TagDTO tagDTO = new TagDTO();
+                    tagDTO.setId(tag.getId());
+                    tagDTO.setName(tag.getName());
+                    return tagDTO;
+                })
+                .collect(Collectors.toList());
+            savedDTO.setTags(tagDTOs);
+        } else {
+            savedDTO.setTags(new ArrayList<>());
+        }
         
         return ResponseEntity.ok(savedDTO);
     }
@@ -114,7 +163,10 @@ public class TaskController extends BaseController {
         existingTask.setCreated_at(taskDTO.getCreated_at());
         existingTask.setUpdated_at(taskDTO.getUpdated_at());
         existingTask.setFinished_at(taskDTO.getFinished_at());
-        // Keep the existing user
+        
+        if (existingTask.getTags() == null) {
+            existingTask.setTags(new ArrayList<>());
+        }
         
         Task updatedTask = taskService.update(existingTask);
         
@@ -128,6 +180,20 @@ public class TaskController extends BaseController {
         updatedDTO.setUpdated_at(updatedTask.getUpdated_at());
         updatedDTO.setFinished_at(updatedTask.getFinished_at());
         updatedDTO.setUserId(updatedTask.getUser() != null ? updatedTask.getUser().getId() : null);
+        
+        if (updatedTask.getTags() != null) {
+            List<TagDTO> tagDTOs = updatedTask.getTags().stream()
+                .map(tag -> {
+                    TagDTO tagDTO = new TagDTO();
+                    tagDTO.setId(tag.getId());
+                    tagDTO.setName(tag.getName());
+                    return tagDTO;
+                })
+                .collect(Collectors.toList());
+            updatedDTO.setTags(tagDTOs);
+        } else {
+            updatedDTO.setTags(new ArrayList<>());
+        }
         
         return ResponseEntity.ok(updatedDTO);
     }

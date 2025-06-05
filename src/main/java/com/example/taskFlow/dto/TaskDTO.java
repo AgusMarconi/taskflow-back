@@ -4,6 +4,7 @@ import com.example.taskFlow.enumeration.Status;
 import com.example.taskFlow.enumeration.Priority;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class TaskDTO {
@@ -15,5 +16,6 @@ public class TaskDTO {
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
     private LocalDateTime finished_at;
-    private Long userId; 
+    private Long userId;
+    private List<TagDTO> tags;
 }

@@ -15,22 +15,31 @@ public class UserController extends BaseController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> createUser(@RequestBody UserDTO userDTO) {
-        User user = new User();
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
-        return ResponseEntity.ok(userService.save(user));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserDTO> partialUpdateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         User user = userService.findbyId(id);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(user);
+
+        if (userDTO.getFirstName() != null) {
+            user.setFirstName(userDTO.getFirstName());
+        }
+        if (userDTO.getLastName() != null) {
+            user.setLastName(userDTO.getLastName());
+        }
+        if (userDTO.getEmail() != null) {
+            user.setEmail(userDTO.getEmail());
+        }
+
+        User updatedUser = userService.update(user);
+
+        UserDTO responseDTO = new UserDTO();
+        responseDTO.setId(updatedUser.getId());
+        responseDTO.setFirstName(updatedUser.getFirstName());
+        responseDTO.setLastName(updatedUser.getLastName());
+        responseDTO.setEmail(updatedUser.getEmail());
+
+        return ResponseEntity.ok(responseDTO);
     }
 }

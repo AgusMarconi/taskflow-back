@@ -7,6 +7,7 @@ import com.example.taskFlow.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -43,5 +44,11 @@ public class UserServiceImp implements UserService {
     @Override
     public void delete(Long id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public User getCurrentUser() {
+        var email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return findByEmail(email);
     }
 }

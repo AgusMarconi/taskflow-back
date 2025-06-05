@@ -16,47 +16,58 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.example.taskFlow.dto.UserDTO;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService userService;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
-    private final PasswordEncoder passwordEncoder;
+        private final UserService userService;
+        private final JwtService jwtService;
+        private final AuthenticationManager authenticationManager;
+        private final PasswordEncoder passwordEncoder;
 
-    @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
-        var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
-                .build();
+        @PostMapping("/register")
+        public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+                var user = User.builder()
+                                .firstName(request.getFirstName())
+                                .lastName(request.getLastName())
+                                .email(request.getEmail())
+                                .password(passwordEncoder.encode(request.getPassword()))
+                                .role(Role.USER)
+                                .build();
 
-        userService.save(user);
+                userService.save(user);
 
-        var jwtToken = jwtService.generateToken(user);
-        return ResponseEntity.ok(AuthResponse.builder()
-                .token(jwtToken)
-                .build());
-    }
+                var jwtToken = jwtService.generateToken(user);
+                return ResponseEntity.ok(AuthResponse.builder()
+                                .token(jwtToken)
+                                .build());
+        }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-        var user = userService.loadUserByUsername(request.getEmail());
-        var jwtToken = jwtService.generateToken(user);
-        return ResponseEntity.ok(AuthResponse.builder()
-                .token(jwtToken)
-                .build());
-    }
-} 
+        @PostMapping("/login")
+        public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest request) {
+                authenticationManager.authenticate(
+                                new UsernamePasswordAuthenticationToken(
+                                                request.getEmail(),
+                                                request.getPassword()));
+                var user = userService.loadUserByUsername(request.getEmail());
+                var jwtToken = jwtService.generateToken(user);
+                return ResponseEntity.ok(AuthResponse.builder()
+                                .token(jwtToken)
+                                .build());
+        }
+
+        @GetMapping("/me")
+        public ResponseEntity<UserDTO> getCurrentUser() {
+                User user = userService.getCurrentUser();
+                UserDTO userDTO = new UserDTO();
+                userDTO.setId(user.getId());
+                userDTO.setFirstName(user.getFirstName());
+                userDTO.setLastName(user.getLastName());
+                userDTO.setEmail(user.getEmail());
+                return ResponseEntity.ok(userDTO);
+        }
+}

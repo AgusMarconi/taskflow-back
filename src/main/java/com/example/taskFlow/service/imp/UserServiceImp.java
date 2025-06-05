@@ -5,13 +5,21 @@ import com.example.taskFlow.service.UserService;
 import com.example.taskFlow.repository.UserRepository;
 import com.example.taskFlow.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @Service
 public class UserServiceImp implements UserService {
 
     @Autowired
     private UserRepository userRepository;
-    
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
     @Override
     public User findbyId(Long id) {
         return userRepository.findById(id).orElse(null);
@@ -19,7 +27,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     @Override

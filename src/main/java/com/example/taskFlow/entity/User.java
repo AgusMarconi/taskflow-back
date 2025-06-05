@@ -1,53 +1,66 @@
 package com.example.taskFlow.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
-import java.util.List;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import java.time.LocalDateTime;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-@Entity
-@Getter
-@Setter
-@AllArgsConstructor
+import java.util.Collection;
+import java.util.List;
+
+@Data
+@Builder
 @NoArgsConstructor
-public class User {
-
+@AllArgsConstructor
+@Entity
+@Table(name = "_user")
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @Column
+    private Long id;
+    
     private String firstName;
-
-    @Column
     private String lastName;
-
-    @Column
+    
+    @Column(unique = true)
     private String email;
-
-    @Column
+    
     private String password;
+    
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Task> tasks;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
 
-    @CreationTimestamp
-    @Column
-    private LocalDateTime createdAt;
+    @Override
+    public String getUsername() {
+        return email;
+    }
 
-    @UpdateTimestamp
-    @Column
-    private LocalDateTime updatedAt;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

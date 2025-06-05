@@ -17,10 +17,10 @@ public class User {
     private long id;
 
     @Column
-    private String name;
+    private String email;
 
     @Column
-    private String password_hash;
+    private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Task> tasks;

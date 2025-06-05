@@ -1,9 +1,15 @@
+package com.example.taskFlow.entity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import java.util.Date;
+import com.example.taskFlow.enumeration.Status;
+import com.example.taskFlow.enumeration.Priority;
 
 @Entity
 public class Task{
@@ -19,10 +25,10 @@ public class Task{
     private String description;
 
     @Column
-    private Status status; //is ENUM
+    private Status status;
 
     @Column
-    private Priority priority; //is ENUM
+    private Priority priority;
 
     @Column
     private Date created_at;
@@ -33,8 +39,8 @@ public class Task{
     @Column
     private Date finished_at;
 
-    @Column
-    private long user_id;
-
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

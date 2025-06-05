@@ -6,5 +6,5 @@ import lombok.Data;
 public class TagDTO {
     private Long id;
     private String name;
-    private Long taskId; 
+    private Long task_id; 
 }

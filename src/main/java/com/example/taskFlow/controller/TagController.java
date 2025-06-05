@@ -26,8 +26,8 @@ public class TagController {
         Tag tag = new Tag();
         tag.setName(tagDTO.getName());
 
-        if (tagDTO.getTaskId() != null) {
-            Task task = taskService.findById(tagDTO.getTaskId());
+        if (tagDTO.getTask_id() != null) {
+            Task task = taskService.findById(tagDTO.getTask_id());
             if (task == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }

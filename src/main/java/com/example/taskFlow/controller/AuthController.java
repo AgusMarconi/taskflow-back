@@ -31,37 +31,48 @@ public class AuthController {
 
         @PostMapping("/register")
         public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
-        if (userService.existsByEmail(request.getEmail())) {
-                return ResponseEntity.badRequest().build();
-        }
-        var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
-                .build();
 
-        userService.save(user);
+                if (userService.existsByEmail(request.getEmail())) {
+                        return ResponseEntity.badRequest().body(
+                                        AuthResponse.builder()
+                                                        .message("Usuario ya registrado con ese email")
+                                                        .build());
+                }
 
-        var jwtToken = jwtService.generateToken(user);
-        return ResponseEntity.ok(AuthResponse.builder()
-                .token(jwtToken)
-                .build());
-        }
+                var user = User.builder()
+                                .firstName(request.getFirstName())
+                                .lastName(request.getLastName())
+                                .email(request.getEmail())
+                                .password(passwordEncoder.encode(request.getPassword()))
+                                .role(Role.USER)
+                                .build();
 
+                userService.save(user);
 
-        @PostMapping("/login")
-        public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest request) {
-                authenticationManager.authenticate(
-                                new UsernamePasswordAuthenticationToken(
-                                                request.getEmail(),
-                                                request.getPassword()));
-                var user = userService.loadUserByUsername(request.getEmail());
                 var jwtToken = jwtService.generateToken(user);
                 return ResponseEntity.ok(AuthResponse.builder()
                                 .token(jwtToken)
                                 .build());
+        }
+
+        @PostMapping("/login")
+        public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest request) {
+                try {
+                        authenticationManager.authenticate(
+                                        new UsernamePasswordAuthenticationToken(
+                                                        request.getEmail(),
+                                                        request.getPassword()));
+                        var user = userService.loadUserByUsername(request.getEmail());
+                        var jwtToken = jwtService.generateToken(user);
+                        return ResponseEntity.ok(AuthResponse.builder()
+                                        .token(jwtToken)
+                                        .build());
+                } catch (org.springframework.security.authentication.BadCredentialsException ex) {
+                        return ResponseEntity.status(401).body(
+                                        AuthResponse.builder()
+                                                        .message("Credenciales incorrectas")
+                                                        .build());
+                }
         }
 
         @GetMapping("/me")

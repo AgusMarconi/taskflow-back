@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.taskFlow.dto.AuthDTO;
-import com.example.taskFlow.dto.UserDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController

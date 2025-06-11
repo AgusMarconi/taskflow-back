@@ -32,6 +32,11 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
     public User save(User user) {
         return userRepository.save(user);
     }

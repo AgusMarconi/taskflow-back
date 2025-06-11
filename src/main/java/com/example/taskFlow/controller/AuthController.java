@@ -31,21 +31,25 @@ public class AuthController {
 
         @PostMapping("/register")
         public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
-                var user = User.builder()
-                                .firstName(request.getFirstName())
-                                .lastName(request.getLastName())
-                                .email(request.getEmail())
-                                .password(passwordEncoder.encode(request.getPassword()))
-                                .role(Role.USER)
-                                .build();
-
-                userService.save(user);
-
-                var jwtToken = jwtService.generateToken(user);
-                return ResponseEntity.ok(AuthResponse.builder()
-                                .token(jwtToken)
-                                .build());
+        if (userService.existsByEmail(request.getEmail())) {
+                return ResponseEntity.badRequest().build();
         }
+        var user = User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
+                .build();
+
+        userService.save(user);
+
+        var jwtToken = jwtService.generateToken(user);
+        return ResponseEntity.ok(AuthResponse.builder()
+                .token(jwtToken)
+                .build());
+        }
+
 
         @PostMapping("/login")
         public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest request) {

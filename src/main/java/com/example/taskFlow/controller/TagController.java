@@ -12,6 +12,7 @@ import com.example.taskFlow.entity.User;
 import com.example.taskFlow.dto.TagDTO;
 import org.springframework.http.HttpStatus;
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/tags")
@@ -25,6 +26,13 @@ public class TagController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping(value = { "", "/"})
+    public ResponseEntity<List<Tag>> getAllTagsForCurrentUser() {
+        User currentUser = userService.getCurrentUser();
+        List<Tag> tags = tagService.findByUserId(currentUser.getId());
+        return ResponseEntity.ok(tags);
+    }
 
     @PostMapping
     public ResponseEntity<Tag> createTag(@RequestBody TagDTO tagDTO) {

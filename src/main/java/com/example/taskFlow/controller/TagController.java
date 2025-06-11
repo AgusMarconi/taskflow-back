@@ -27,17 +27,21 @@ public class TagController {
     @Autowired
     private UserService userService;
 
-    @GetMapping(value = { "", "/"})
-    public ResponseEntity<List<Tag>> getAllTagsForCurrentUser() {
+    @GetMapping(value = { "", "/" })
+    public ResponseEntity<List<TagDTO>> getAllTagsForCurrentUser() {
         User currentUser = userService.getCurrentUser();
         List<Tag> tags = tagService.findByUserId(currentUser.getId());
-        return ResponseEntity.ok(tags);
+        List<TagDTO> tagDTOs = tags.stream()
+                .map(tag -> new TagDTO(tag.getId(), tag.getName(), tag.getColor(), null))
+                .toList();
+        return ResponseEntity.ok(tagDTOs);
     }
 
     @PostMapping
-    public ResponseEntity<Tag> createTag(@RequestBody TagDTO tagDTO) {
+    public ResponseEntity<TagDTO> createTag(@RequestBody TagDTO tagDTO) {
         Tag tag = new Tag();
         tag.setName(tagDTO.getName());
+        tag.setColor(tagDTO.getColor());
 
         if (tagDTO.getTask_id() != null) {
             Task task = taskService.findById(tagDTO.getTask_id());
@@ -68,11 +72,12 @@ public class TagController {
             tag = tagService.save(tag);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(tag);
+        TagDTO responseDTO = new TagDTO(tag.getId(), tag.getName(), tag.getColor(), null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tag> getTagById(@PathVariable Long id) {
+    public ResponseEntity<TagDTO> getTagById(@PathVariable Long id) {
         Tag tag = tagService.findById(id);
         if (tag == null) {
             return ResponseEntity.notFound().build();
@@ -87,11 +92,12 @@ public class TagController {
             }
         }
 
-        return ResponseEntity.ok(tag);
+        TagDTO tagDTO = new TagDTO(tag.getId(), tag.getName(), tag.getColor(), null);
+        return ResponseEntity.ok(tagDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Tag> updateTag(@PathVariable Long id, @RequestBody TagDTO tagDTO) {
+    public ResponseEntity<TagDTO> updateTag(@PathVariable Long id, @RequestBody TagDTO tagDTO) {
         Tag existingTag = tagService.findById(id);
         if (existingTag == null) {
             return ResponseEntity.notFound().build();
@@ -107,26 +113,9 @@ public class TagController {
         }
 
         existingTag.setName(tagDTO.getName());
-        return ResponseEntity.ok(tagService.update(existingTag));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
-        Tag tag = tagService.findById(id);
-        if (tag == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        if (tag.getTasks() != null && !tag.getTasks().isEmpty()) {
-            User authenticatedUser = userService.getCurrentUser();
-            boolean ownsAllTasks = tag.getTasks().stream()
-                    .allMatch(task -> task.getUser().getId().equals(authenticatedUser.getId()));
-            if (!ownsAllTasks) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-        }
-
-        tagService.deleteById(id);
-        return ResponseEntity.noContent().build();
+        existingTag.setColor(tagDTO.getColor());
+        Tag updatedTag = tagService.update(existingTag);
+        TagDTO responseDTO = new TagDTO(updatedTag.getId(), updatedTag.getName(), updatedTag.getColor(), null);
+        return ResponseEntity.ok(responseDTO);
     }
 }

@@ -30,6 +30,9 @@ public class Tag {
     @Column
     private String name;
 
+    @Column
+    private String color;
+
     @CreationTimestamp
     @Column
     private LocalDateTime createdAt;

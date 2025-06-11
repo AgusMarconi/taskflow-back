@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.taskFlow.dto.AuthDTO;
 import com.example.taskFlow.dto.UserDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -76,13 +78,12 @@ public class AuthController {
         }
 
         @GetMapping("/me")
-        public ResponseEntity<UserDTO> getCurrentUser() {
+        public ResponseEntity<AuthDTO> getCurrentUser() {
                 User user = userService.getCurrentUser();
-                UserDTO userDTO = new UserDTO();
-                userDTO.setId(user.getId());
-                userDTO.setFirstName(user.getFirstName());
-                userDTO.setLastName(user.getLastName());
-                userDTO.setEmail(user.getEmail());
-                return ResponseEntity.ok(userDTO);
+                AuthDTO authDTO = new AuthDTO();
+                authDTO.setFirstName(user.getFirstName());
+                authDTO.setLastName(user.getLastName());
+                authDTO.setEmail(user.getEmail());
+                return ResponseEntity.ok(authDTO);
         }
 }

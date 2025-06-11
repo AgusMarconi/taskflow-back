@@ -35,7 +35,7 @@ public class AuthController {
                 if (userService.existsByEmail(request.getEmail())) {
                         return ResponseEntity.badRequest().body(
                                         AuthResponse.builder()
-                                                        .message("Usuario ya registrado con ese email")
+                                                        .message("Usuario ya registrado con ese email.")
                                                         .build());
                 }
 
@@ -70,7 +70,7 @@ public class AuthController {
                 } catch (org.springframework.security.authentication.BadCredentialsException ex) {
                         return ResponseEntity.status(401).body(
                                         AuthResponse.builder()
-                                                        .message("Credenciales incorrectas")
+                                                        .message("Credenciales incorrectas.")
                                                         .build());
                 }
         }

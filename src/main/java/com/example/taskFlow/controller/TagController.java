@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.example.taskFlow.service.TagService;
-import com.example.taskFlow.service.TaskService;
 import com.example.taskFlow.service.UserService;
 import com.example.taskFlow.entity.Tag;
 import com.example.taskFlow.entity.Task;
@@ -93,5 +92,21 @@ public class TagController {
         Tag updatedTag = tagService.update(existingTag);
         TagDTO responseDTO = new TagDTO(updatedTag.getId(), updatedTag.getName(), updatedTag.getColor(), null);
         return ResponseEntity.ok(responseDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
+        Tag tag = tagService.findById(id);
+        if (tag == null) {
+            return ResponseEntity.notFound().build();
+        }
+        User authenticatedUser = userService.getCurrentUser();
+        boolean ownsAllTasks = tag.getTasks() == null || tag.getTasks().stream()
+                .allMatch(task -> task.getUser().getId().equals(authenticatedUser.getId()));
+        if (!ownsAllTasks) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        tagService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

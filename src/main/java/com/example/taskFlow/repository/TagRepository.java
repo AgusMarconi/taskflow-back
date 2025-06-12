@@ -2,7 +2,6 @@ package com.example.taskFlow.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.taskFlow.entity.Tag;
-import com.example.taskFlow.entity.Task;
 
 import java.util.List;
 

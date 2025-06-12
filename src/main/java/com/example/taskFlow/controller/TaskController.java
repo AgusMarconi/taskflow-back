@@ -63,6 +63,7 @@ public class TaskController extends BaseController {
         task.setUpdated_at(taskDTO.getUpdated_at());
         task.setFinished_at(taskDTO.getFinished_at());
         task.setUser(currentUser);
+        task.setDueDate(taskDTO.getDue_date());
 
         if (task.getTags() == null) {
             task.setTags(new ArrayList<>());
@@ -97,6 +98,7 @@ public class TaskController extends BaseController {
         existingTask.setCreated_at(taskDTO.getCreated_at());
         existingTask.setUpdated_at(taskDTO.getUpdated_at());
         existingTask.setFinished_at(taskDTO.getFinished_at());
+        existingTask.setDueDate(taskDTO.getDue_date());
 
         if (taskDTO.getTags() != null) {
             List<Tag> userTags = tagService.findByUserId(currentUser.getId());
@@ -137,6 +139,7 @@ public class TaskController extends BaseController {
         dto.setUpdated_at(task.getUpdated_at());
         dto.setFinished_at(task.getFinished_at());
         dto.setUserId(task.getUser() != null ? task.getUser().getId() : null);
+        dto.setDue_date(task.getDueDate());
 
         if (task.getTags() != null) {
             List<TagDTO> tagDTOs = task.getTags().stream()

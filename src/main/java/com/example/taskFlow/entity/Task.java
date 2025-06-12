@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Task{
+public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +44,9 @@ public class Task{
     @Column
     private Priority priority;
 
+    @Column
+    private LocalDateTime dueDate;
+
     @CreationTimestamp
     @Column
     private LocalDateTime created_at;
@@ -57,10 +60,7 @@ public class Task{
 
     @ManyToMany
     @JsonManagedReference
-    @JoinTable(name = "task_tag",
-        joinColumns = @JoinColumn(name = "task_id", nullable = true),
-        inverseJoinColumns = @JoinColumn(name = "tag_id", nullable = true)
-    )
+    @JoinTable(name = "task_tag", joinColumns = @JoinColumn(name = "task_id", nullable = true), inverseJoinColumns = @JoinColumn(name = "tag_id", nullable = true))
     private List<Tag> tags;
 
     @ManyToOne

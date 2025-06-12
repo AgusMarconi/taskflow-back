@@ -147,6 +147,7 @@ public class TaskController extends BaseController {
                         TagDTO tagDTO = new TagDTO();
                         tagDTO.setId(tag.getId());
                         tagDTO.setName(tag.getName());
+                        tagDTO.setColor(tag.getColor()); 
                         return tagDTO;
                     })
                     .collect(Collectors.toList());

@@ -120,10 +120,15 @@ public class TaskController extends BaseController {
         User currentUser = userService.getCurrentUser();
         Task existingTask = taskService.findById(id);
 
-        if (existingTask == null || !existingTask.getUser().getId().equals(currentUser.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if (existingTask == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
+        if (!existingTask.getUser().getId().equals(currentUser.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        
+        
         taskService.deleteById(id);
         return ResponseEntity.ok().build();
     }

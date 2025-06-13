@@ -25,7 +25,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
 
-    @Value("${cors.allowed-origins")
+    @Value("${cors.allowed-origins}")
     private String allowedOrigins;
 
     @Value("${jwt.secret}")

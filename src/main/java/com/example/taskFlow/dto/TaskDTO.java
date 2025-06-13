@@ -13,6 +13,7 @@ public class TaskDTO {
     private String description;
     private Status status;
     private Priority priority;
+    private LocalDateTime due_date;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
     private LocalDateTime finished_at;

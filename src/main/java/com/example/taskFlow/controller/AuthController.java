@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.taskFlow.dto.UserDTO;
+
+import com.example.taskFlow.dto.AuthDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
@@ -31,6 +32,14 @@ public class AuthController {
 
         @PostMapping("/register")
         public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+
+                if (userService.existsByEmail(request.getEmail())) {
+                        return ResponseEntity.badRequest().body(
+                                        AuthResponse.builder()
+                                                        .message("Usuario ya registrado con ese email.")
+                                                        .build());
+                }
+
                 var user = User.builder()
                                 .firstName(request.getFirstName())
                                 .lastName(request.getLastName())
@@ -49,25 +58,31 @@ public class AuthController {
 
         @PostMapping("/login")
         public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest request) {
-                authenticationManager.authenticate(
-                                new UsernamePasswordAuthenticationToken(
-                                                request.getEmail(),
-                                                request.getPassword()));
-                var user = userService.loadUserByUsername(request.getEmail());
-                var jwtToken = jwtService.generateToken(user);
-                return ResponseEntity.ok(AuthResponse.builder()
-                                .token(jwtToken)
-                                .build());
+                try {
+                        authenticationManager.authenticate(
+                                        new UsernamePasswordAuthenticationToken(
+                                                        request.getEmail(),
+                                                        request.getPassword()));
+                        var user = userService.loadUserByUsername(request.getEmail());
+                        var jwtToken = jwtService.generateToken(user);
+                        return ResponseEntity.ok(AuthResponse.builder()
+                                        .token(jwtToken)
+                                        .build());
+                } catch (org.springframework.security.authentication.BadCredentialsException ex) {
+                        return ResponseEntity.status(401).body(
+                                        AuthResponse.builder()
+                                                        .message("Credenciales incorrectas.")
+                                                        .build());
+                }
         }
 
         @GetMapping("/me")
-        public ResponseEntity<UserDTO> getCurrentUser() {
+        public ResponseEntity<AuthDTO> getCurrentUser() {
                 User user = userService.getCurrentUser();
-                UserDTO userDTO = new UserDTO();
-                userDTO.setId(user.getId());
-                userDTO.setFirstName(user.getFirstName());
-                userDTO.setLastName(user.getLastName());
-                userDTO.setEmail(user.getEmail());
-                return ResponseEntity.ok(userDTO);
+                AuthDTO authDTO = new AuthDTO();
+                authDTO.setFirstName(user.getFirstName());
+                authDTO.setLastName(user.getLastName());
+                authDTO.setEmail(user.getEmail());
+                return ResponseEntity.ok(authDTO);
         }
 }
